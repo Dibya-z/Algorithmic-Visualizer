@@ -1,0 +1,186 @@
+/* AlgorithmVisualizer.css */
+/* .outside{
+  width: 100vw;
+  height: 100vh;
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  background-color: rgb(246, 243, 233); */
+/* } */
+.container {
+    max-width: 800px;
+    margin: 0 auto;
+    padding: 20px;
+    font-family: Arial, sans-serif;
+    /* background-color: rgb(246, 243, 233); */
+  }
+  
+  h1 {
+    text-align: center;
+    margin-bottom: 20px;
+  }
+  
+  .controls {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 10px;
+    flex-wrap: wrap;
+  }
+  
+  .pause-resume-controls {
+    display: flex;
+    justify-content: center;
+    margin-bottom: 20px;
+    
+  }
+  
+  .controls select,
+  .controls button,
+  .pause-resume-controls button,
+  .custom-input input,
+  .custom-input button {
+    padding: 8px 12px;
+    font-size: 14px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    margin: 5px;
+    transition: all 0.3s ease;
+    
+  }
+  
+  .controls button:hover,
+  .pause-resume-controls button:hover,
+  .custom-input button:hover {
+    color: white;
+    background-color: rgb(119, 114, 114);
+    cursor: pointer;
+  }
+  
+  .controls button:disabled,
+  .pause-resume-controls button:disabled,
+  .custom-input button:disabled {
+    pointer-events: none;
+    opacity: 0.5;
+    cursor: not-allowed;
+  }
+  
+  
+  .speed-control,
+  .max-bars-control {
+    display: flex;
+    align-items: center;
+  }
+  
+  .speed-control label,
+  .max-bars-control label {
+    margin-right: 10px;
+  }
+  
+  .max-bars-control input {
+    width: 50px;
+  }
+  
+  .array-container {
+    height: 300px;
+    display: flex;
+    align-items: flex-end;
+    justify-content: space-around;
+    background-color: #f0f0f0;
+    padding: 10px;
+    border-radius: 4px;
+    margin-bottom: 20px;
+  }
+  
+  .array-bar {
+    width: 4%;
+    transition: height 0.2s ease-in-out;
+    position: relative;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+  
+  .array-bar.unsorted {
+    background-color: lightblue;
+  }
+  
+  .array-bar.sorting {
+    background-color: green;
+  }
+  
+  .array-bar.sorted {
+    background-color: orange;
+  }
+  
+  .bar-value {
+    position: absolute;
+    color: black;
+    font-size: 12px;
+  }
+  
+  .bar-index {
+    position: absolute;
+    bottom: -20px;
+    font-size: 12px;
+  }
+  
+  .custom-input {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 20px;
+    align-items: center;
+  }
+  
+  .custom-input input {
+    flex-grow: 1;
+    margin-right: 10px;
+  }
+  
+  .error-message {
+    color: red;
+    font-size: 14px;
+    margin-left: 10px;
+  }
+  
+  @media (max-width: 600px) {
+    .controls,
+    .pause-resume-controls {
+      flex-direction: column;
+      align-items: stretch;
+    }
+  
+    .controls select,
+    .controls button,
+    .pause-resume-controls button,
+    .custom-input input,
+    .custom-input button {
+      width: 100%;
+      margin: 5px 0;
+    }
+  
+    .speed-control,
+    .max-bars-control {
+      flex-direction: column;
+      align-items: stretch;
+    }
+  
+    .speed-control label,
+    .max-bars-control label {
+      margin-bottom: 5px;
+    }
+  
+    .custom-input {
+      flex-direction: column;
+    }
+  
+    .custom-input input {
+      margin-right: 0;
+      margin-bottom: 10px;
+    }
+  
+    .error-message {
+      margin-left: 0;
+      margin-top: 5px;
+    }
+  }
