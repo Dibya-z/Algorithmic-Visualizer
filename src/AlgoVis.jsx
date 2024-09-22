@@ -1,17 +1,20 @@
 import { useState, useEffect, useRef } from 'react';
+import Controls from './Controls';
+import ArrayContainer from './ArrayContainer';
+import CustomInput from './CustomInput';
+import PauseResume from './PauseResume';
 import './AlgoVisualizer.css';
 
 
 const AlgorithmVisualizer= () => {
-  const pauseRef =useRef(false);
   const [array, setArray] = useState([]);
   const [algorithm, setAlgorithm] = useState('bubble');
   const [speed, setSpeed] = useState(20);
   const [isSorting, setIsSorting] = useState(false);
   const [isPaused, setIsPaused] = useState(false);
-  const [customInput, setCustomInput] = useState('');
   const [maxBars, setMaxBars] = useState(10);
   const [errorMessage, setErrorMessage] = useState('');
+  const pauseRef =useRef(false);
 
   useEffect(() => {
     generateRandomArray();
@@ -30,25 +33,6 @@ const AlgorithmVisualizer= () => {
     setErrorMessage('');
   }; 
 
-  function handleCustomInput(){
-    const newArray = customInput.split(',')
-      .map(num => parseInt(num.trim()))
-      .filter(num => !isNaN(num))
-      .map(value => ({ value, state: 'unsorted'  }));
-    if (newArray.length > 20) {
-      setErrorMessage('Array size should not exceed 20');
-    }
-      else if(newArray.filter(item => item.value > 100).length >= 1){
-      setErrorMessage('Bar value out of range, value shouldn\'t exceed 100');
-    }
-     else if (newArray.filter(item => item.value < 1).length >= 1) {
-      setErrorMessage('Bar value out of range, value shouldn\'t be less than 1');
-    }else if (newArray.length > 0) {
-      setArray(newArray);
-      setErrorMessage('');
-    }
-  };
-
   const sleep = (ms) => new Promise(resolve => setTimeout(resolve, ms));
 
   const pauseableDelay = async () => {
@@ -56,6 +40,21 @@ const AlgorithmVisualizer= () => {
       await sleep(100);
     }
     await sleep(Math.max(10, 1000 - speed * 10));
+  };
+
+  const swap = async (arr, i, j) => {
+    arr[i].state = 'swapping';
+    arr[j].state = 'swapping';
+    setArray([...arr]);
+    await pauseableDelay();
+
+    [arr[i], arr[j]] = [arr[j], arr[i]];
+    setArray([...arr]);
+    await pauseableDelay();
+
+    arr[i].state = 'sorting';
+    arr[j].state = 'sorting';
+    setArray([...arr]);
   };
 
   const bubbleSort = async () => {
@@ -69,9 +68,7 @@ const AlgorithmVisualizer= () => {
         await pauseableDelay();
 
         if (arr[j].value > arr[j + 1].value) {
-          [arr[j], arr[j + 1]] = [arr[j + 1], arr[j]];
-          setArray([...arr]);
-          await pauseableDelay();
+          await swap(arr, j, j + 1);
         }
 
         arr[j].state = 'unsorted';
@@ -103,7 +100,7 @@ const AlgorithmVisualizer= () => {
         }
       }
       if (minIdx !== i) {
-        [arr[i], arr[minIdx]] = [arr[minIdx], arr[i]];
+        await swap(arr, i, minIdx);
       }
       arr[i].state = 'sorted';
       setArray([...arr]);
@@ -123,12 +120,8 @@ const AlgorithmVisualizer= () => {
 
       while (j >= 0 && arr[j].value > key.value) {
         if (pauseRef.current) await pauseableDelay();
-        arr[j + 1] = arr[j];
-        arr[j].state = 'sorting';
+        await swap(arr, j + 1, j);
         j = j - 1;
-        setArray([...arr]);
-        await pauseableDelay();
-        arr[j + 1].state = 'unsorted';
       }
       arr[j + 1] = key;
       for (let k = 0; k <= i; k++) {
@@ -178,74 +171,33 @@ const AlgorithmVisualizer= () => {
 
   return (
     
-      <div className="container">
-        <div className="controls">
-          <select 
-            value={algorithm} 
-            onChange={(e) => setAlgorithm(e.target.value)}
-            disabled={isSorting}
-          >
-            <option value="bubble">Bubble Sort</option>
-            <option value="selection">Selection Sort</option>
-            <option value="insertion">Insertion Sort</option>
-          </select>
-          <div className="speed-control">
-            <label htmlFor="speed">Speed:</label>
-            <input
-              type="range"
-              id="speed"
-              min="5"
-              max="100"
-              value={speed}
-              onChange={(e) => setSpeed(parseInt(e.target.value))}
-              disabled={isSorting}
-            />
-          </div>
-          <div className="max-bars-control">
-            <label htmlFor="maxBars">N:</label>
-            <input
-              type="number"
-              id="maxBars"
-              min="1"
-              max="20"
-              value={maxBars}
-              onChange={handleMaxBarsChange}
-              disabled={isSorting}
-            />
-          </div>
-          <button onClick={generateRandomArray} disabled={isSorting}>Generate New Array</button>
-          <button onClick={startSorting} disabled={isSorting}>Start Sorting</button>
-        </div>
-        <div className="pause-resume-controls">
-              <button onClick={handlePause} disabled={!isSorting || isPaused}>Pause</button>
-              <button onClick={handleResume} disabled={!isSorting || !isPaused}>Resume</button>
-        </div>
-        <div className="array-container">
-          {array.map((item, index) => (
-            <div 
-              key={index} 
-              className={`array-bar ${item.state}`}
-              style={{
-                height: `${(item.value / Math.max(...array.map(i => i.value))) * 100}%`,
-              }}
-            >
-              <span className="bar-value">{item.value}</span>
-              <span className="bar-index">{index}</span>
-            </div>
-          ))}
-        </div>
-        <div className="custom-input">
-          <input
-            type="text"
-            placeholder="Enter comma-separated numbers (max 20, values 1-100)"
-            value={customInput}
-            onChange={(e) => setCustomInput(e.target.value)}
-            disabled={isSorting}
-          />
-          <button onClick={handleCustomInput} disabled={isSorting}>Create Custom Array</button>
-          {errorMessage && <span className="error-message">{errorMessage}</span>}
-        </div>
-      </div>
+  <div className='Container'>
+    <h1>Algorithm Visualizer</h1>
+    <Controls
+      algorithm={algorithm}
+      setAlgorithm={setAlgorithm}
+      speed={speed}
+      setSpeed={setSpeed}
+      maxBars={maxBars}
+      setMaxBars={setMaxBars}
+      generateRandomArray={generateRandomArray}
+      startSorting={startSorting}
+      isSorting={isSorting}
+    />
+    <PauseResume
+      isSorting={isSorting}
+      isPaused={isPaused}
+      setIsPaused={setIsPaused}
+      pauseRef={pauseRef}
+    />
+    <ArrayContainer array={array} />
+    <CustomInput
+      setArray={setArray}
+      isSorting={isSorting}
+      errorMessage={errorMessage}
+      setErrorMessage={setErrorMessage}
+    />
+  </div>
     
   );
 };
